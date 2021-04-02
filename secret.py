@@ -11,9 +11,9 @@ class PersonalData:
         'http://vaxxmax.com/riteaid']
 
 	#Email Settings
-	email_acct = "karsonleperipython@gmail.com"
-	email_pwd = "ThisIsATestPythonPassword"
-	email_recepient = "karsonleperi@gmail.com"
+	email_acct = 
+	email_pwd =
+	email_recepient = 
 	email_subject = "Alert"
 	smtp_server = "smtp.gmail.com"
 	smtp_port = 587
@@ -25,7 +25,7 @@ class PersonalData:
 	auth_token = "your token"
 #	client = Client(account_sid, auth_token)
 	message_from = "+1*******+"
-	message_t0="+12405958160"
+	message_t0=
 	
 	def __init__(self):
 		pass
