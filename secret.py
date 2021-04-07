@@ -1,31 +1,32 @@
 class PersonalData:
 	"This is the personal data"
 	webdriver= "Test"
-	sleeptime = 6
+	sleeptime = 60
 	max_distance = 150
 	state = "OR"
-	notification = "Text"   # Choose Text, Email, or none
-	max_runtime = 60
+	notification = "email"   # Choose text, email, or none
+	max_runtime = 300
 	urls = ['http://vaxxmax.com/cvs',
         'http://vaxxmax.com/walgreens',
-        'http://vaxxmax.com/riteaid']
+        'http://vaxxmax.com/riteaid',
+		'http://vaxxmax.com/walmart']
 
 	#Email Settings
-	email_acct = "karsonleperipython@gmail.com"
-	email_pwd = "ThisIsATestPythonPassword"
-	email_recepient = "karsonleperi@gmail.com"
+	email_acct = 
+	email_pwd =
+	email_recepient = 
 	email_subject = "Alert"
 	smtp_server = "smtp.gmail.com"
 	smtp_port = 587
 	
 	#Text Message Settings
-	#from twilio.ret import Client
+	from twilio.rest import Client
 	
-	account_sid = "you acc ID"
-	auth_token = "your token"
-#	client = Client(account_sid, auth_token)
-	message_from = "+1*******+"
-	message_t0="+12405958160"
+	account_sid = 
+	auth_token = 
+	client = Client(account_sid, auth_token)
+	message_from = 
+	message_to=
 	
 	def __init__(self):
 		pass
