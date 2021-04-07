@@ -22,11 +22,14 @@ class PersonalData:
 	#Text Message Settings
 	from twilio.rest import Client
 	
+
 	account_sid = 
 	auth_token = 
 	client = Client(account_sid, auth_token)
 	message_from = 
 	message_to=
+
+
 	
 	def __init__(self):
 		pass
