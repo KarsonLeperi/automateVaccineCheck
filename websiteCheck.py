@@ -1,22 +1,21 @@
-
+from selenium.webdriver import Chrome
+from selenium.webdriver.support.ui import Select
+from selenium.webdriver.chrome.options import Options
+import time
+import pandas as pd
 
 def webCheck(info):
-	from selenium.webdriver import Chrome
-	from selenium.webdriver.support.ui import Select
-	from selenium.webdriver.chrome.options import Options
-	import time
-	import pandas as pd
-		
+
 	chrome_options = Options()
 	chrome_options.add_argument("--headless")
 	chrome_options.add_argument('log-level=3')
 	driver = Chrome(options=chrome_options)
 
-	costco_return_values = costcoCheck(driver)
-	vaxx_max_values = vaxMaxCheck(info, driver)
-	
+	[costco_return_values, success_costco] = costcoCheck(driver)
+	[vaxx_max_values, success_vaxMax] = vaxMaxCheck(info, driver)
 	driver.quit()
-	return vaxx_max_values, costco_values
+	
+	return vaxx_max_values, costco_return_values, success_costco, success_vaxMax
 def vaxMaxCheck(info, driver):
 	#Check vaxxmax for vaccine slots
 	urls = info.urls
@@ -39,6 +38,8 @@ def vaxMaxCheck(info, driver):
 			name = 'walgreens'
 		elif 'riteaid' in url:
 			name = 'rite-aid'
+		elif 'walmart' in url:
+            name = 'walmart'
 		
 		
 		selector = Select(driver.find_element_by_xpath(
@@ -69,7 +70,7 @@ def vaxMaxCheck(info, driver):
 				new_entries_text[4] = None
 				new_entries_text[5] = entries_text[6]
 				new_entries_text[6] = entries_text[7]
-				new_entries_text[7] = entries_text[8]
+				new_entries_text[7] = entries_text[-1]
 			elif name == 'walgreens':
 				new_entries_text[1] = entries_text[1]
 				new_entries_text[2] = entries_text[2]
@@ -77,7 +78,15 @@ def vaxMaxCheck(info, driver):
 				new_entries_text[4] = None
 				new_entries_text[5] = entries_text[4]
 				new_entries_text[6] = entries_text[5]
-				new_entries_text[7] = entries_text[6]
+				new_entries_text[7] = entries_text[-1]
+			elif name == 'walmart':
+                new_entries_text[1] = entries_text[2] # town/city
+                new_entries_text[2] = entries_text[3] # state
+                new_entries_text[3] = entries_text[4] # zip
+                new_entries_text[4] = entries_text[5] #county
+                new_entries_text[5] = entries_text[6] # last updated
+                new_entries_text[6] = entries_text[7] # became available
+                new_entries_text[7] = entries_text[-1] # distance
 			else:
 				new_entries_text = entries_text
 
@@ -98,14 +107,13 @@ def vaxMaxCheck(info, driver):
 
 		# If there are shots, notify!
 		if len(df_close) > 0:
-			return df_close
+			return df_close, True
 		else:
-			return "Nothing Available"
+			return "Nothing Available", False
 	
 	
 def costcoCheck(driver):
-	#This check is based on the costco url redirecting to certain URLs when vaccines are available and when not
-
+	#This check is based on the costco url redirecting to certain URLs when vaccines are available and when not. This specifically checks the locations based on my prefered ordering.
 	locations = {
 				"Aloha": "https://book-costcopharmacy.appointment-plus.com/ctnqxln8/?e_id=5363#/book-appointment/select-a-location",
 				"Clackamas": "https://book-costcopharmacy.appointment-plus.com/ctns2ceq/?e_id=5377#/book-appointment/select-a-location",
@@ -118,6 +126,6 @@ def costcoCheck(driver):
 		itt = 0
 		new_url = driver.current_url
 		if "select-staff" not in new_url:
-			return {city: url}
+			return [city, url], True
 	
-	return {"No Spots": "No Spots"}
+	return "Nothing Available", False
