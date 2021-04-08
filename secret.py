@@ -4,12 +4,16 @@ class PersonalData:
 	sleeptime = 60
 	max_distance = 150
 	state = "OR"
+	zipcode = 97005
 	notification = "email"   # Choose text, email, or none
 	max_runtime = 300
 	urls = ['http://vaxxmax.com/cvs',
         'http://vaxxmax.com/walgreens',
-        'http://vaxxmax.com/riteaid',
-		'http://vaxxmax.com/walmart']
+        'http://vaxxmax.com/riteaid']
+		#,
+		#'http://vaxxmax.com/walmart']
+		
+	safeway_url = "https://www.mhealthappointments.com/covidappt"
 
 	#Email Settings
 	email_acct = 
@@ -28,7 +32,6 @@ class PersonalData:
 	client = Client(account_sid, auth_token)
 	message_from = 
 	message_to=
-
 
 	
 	def __init__(self):
