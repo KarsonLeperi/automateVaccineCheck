@@ -1,6 +1,7 @@
 from selenium.webdriver import Chrome
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.keys import Keys
 import time
 import pandas as pd
 
@@ -13,9 +14,10 @@ def webCheck(info):
 
 	[costco_return_values, success_costco] = costcoCheck(driver)
 	[vaxx_max_values, success_vaxMax] = vaxMaxCheck(info, driver)
+	[safeway_values, success_safeway] = safewayCheck(driver, info)
 	driver.quit()
 	
-	return vaxx_max_values, costco_return_values, success_costco, success_vaxMax
+	return vaxx_max_values, costco_return_values, safeway_values, success_costco, success_vaxMax, success_safeway
 def vaxMaxCheck(info, driver):
 	#Check vaxxmax for vaccine slots
 	urls = info.urls
@@ -38,8 +40,8 @@ def vaxMaxCheck(info, driver):
 			name = 'walgreens'
 		elif 'riteaid' in url:
 			name = 'rite-aid'
-		elif 'walmart' in url:
-            name = 'walmart'
+		# elif 'walmart' in url:
+			# name = 'walmart'
 		
 		
 		selector = Select(driver.find_element_by_xpath(
@@ -79,14 +81,14 @@ def vaxMaxCheck(info, driver):
 				new_entries_text[5] = entries_text[4]
 				new_entries_text[6] = entries_text[5]
 				new_entries_text[7] = entries_text[-1]
-			elif name == 'walmart':
-                new_entries_text[1] = entries_text[2] # town/city
-                new_entries_text[2] = entries_text[3] # state
-                new_entries_text[3] = entries_text[4] # zip
-                new_entries_text[4] = entries_text[5] #county
-                new_entries_text[5] = entries_text[6] # last updated
-                new_entries_text[6] = entries_text[7] # became available
-                new_entries_text[7] = entries_text[-1] # distance
+			# elif name == 'walmart':
+				# new_entries_text[1] = entries_text[2] # town/city
+				# new_entries_text[2] = entries_text[3] # state
+				# new_entries_text[3] = entries_text[4] # zip
+				# new_entries_text[4] = entries_text[5] #county
+				# new_entries_text[5] = entries_text[6] # last updated
+				# new_entries_text[6] = entries_text[7] # became available
+				# new_entries_text[7] = entries_text[-1] # distance
 			else:
 				new_entries_text = entries_text
 
@@ -129,3 +131,31 @@ def costcoCheck(driver):
 			return [city, url], True
 	
 	return "Nothing Available", False
+	
+def safewayCheck(driver, info):	
+
+	driver.get("https://www.mhealthappointments.com/covidappt")
+	zip_code_input = driver.find_element_by_xpath('//*[@id="covid_vaccine_search_input"]')
+
+	zip_code_input.send_keys(info.zipcode)
+
+	distance_input = driver.find_element_by_xpath('//*[@id="fiftyMile-covid_vaccine_search"]').click()
+
+	driver.find_element_by_xpath('/html/body/div[1]/div/main/div/div[2]/div/div[8]/div[1]/div[2]/button').click()
+
+	table = driver.find_element_by_id("covid_vaccine_store_list_content")
+	time.sleep(2)
+	rows = table.find_elements_by_tag_name("div")
+
+	locations = rows[1:len(rows):3]
+	available = rows[2:len(rows):3]
+	check = []
+
+	for i in range(0, len(locations)):
+		if available[i].text != 'No':
+			check.append(locations[i].text)
+
+	if len(check) != 0:
+		return check, True
+	else:
+		return check, False

@@ -12,28 +12,33 @@ t0 = time.time()
 elapsed_time = 0
 
 while elapsed_time < info.max_runtime:
-	[vaxMax, costco, success_costco, success_vaxMax] = websiteCheck.webCheck(info)
+	[vaxMax, costco, safeway, success_costco, success_vaxMax, success_safeway] = websiteCheck.webCheck(info)
 	if success_costco or success_vaxMax:
 		break
 	elapsed_time = time.time() - t0
 	time.sleep(info.sleeptime)
 		
 
-#create message and send to text, email, or terminal
-if success_vaxMax == True and success_costco == True:
-	values = vaxMax.iloc[0]
-	store = values['store']
-	City = values['city']
-	distance = values['distance']
-	if store == "cvs":
-		URL = info.urls[0]
-	elif store == "walgreens":
-		URL = info.urls[1]
-	elif store == "rite-aid":
-		URL = info.urls[2]
-	else:
-		URL = "error"
-	message_body = f"Vaccine appointment available at {store}, in {City}, {distance} miles away. {URL}"
+#create message and send to text, email, or terminal. 
+#AS of last check, costco pharmacy website is down. Removed from reporting
+values = vaxMax.iloc[0]
+store = values['store']
+City = values['city']
+distance = values['distance']
+if store == "cvs":
+	URL = info.urls[0]
+elif store == "walgreens":
+	URL = info.urls[1]
+elif store == "rite-aid":
+	URL = info.urls[2]
+else:
+	URL = "error"
+if success_vaxMax == True and success_safeway == True:
+	message_body = f"Vaccine appointment available at {store}, in {City}, {distance} miles away. {URL}. Also, Safeway, {safeway[0]}. {info.safeway_url}"
+elif success_vaxMax == True and success_safeway == False:
+	message_body = f"Vaccine appointment available at {store}, in {City}, {distance} miles away. {URL}."
+elif success_vaxMax == False and success_safeway == True:
+	message_body = f"Vaccine appointment available at Safeway, {safeway[0]}. {info.safeway_url}"
 else:
 	message_body = "No Luck. Try Again."
 
